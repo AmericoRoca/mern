@@ -1,35 +1,38 @@
-import { Link } from "react-router-dom"
-import React, { useState } from 'react';
+import { Link, useNavigate } from "react-router-dom";
+import React, { useState, useEffect } from 'react';
 
+const CoasterPage = () => {
+  const [coasters, setCoasters] = useState([]);
+  const navigate = useNavigate();
 
-const CoasterPage = () =>{
+  const loadCoaster = () => {
+    fetch('http://localhost:5005/api/coaster')
+      .then(res => res.json())
+      .then(allCoasters => setCoasters(allCoasters));
+  };
 
-    const [coasters, setCoasters] = useState([])
+  const navigateToCoasterDetails = (coasterId) => {
+    navigate(`/details/${coasterId}`);
+  };
 
-    const loadCoaster = () =>{
+  useEffect(() => {
+    loadCoaster();
+  }, []);
 
-        fetch('http://localhost:5005/api/coaster')
-            .then(res => res.json())
-            .then(allCoasters => setCoasters(allCoasters))
-    }
+  return (
+    <main>
+      <h1>Lista</h1>
+      <hr/>
+      {coasters.map(eachCoaster => (
+        <article className="coaster-card" key={eachCoaster._id}>
+          <img src={eachCoaster.imageUrl} alt="Coaster" />
+          <h3>{eachCoaster.title}</h3>
+          <button onClick={() => navigateToCoasterDetails(eachCoaster._id)}>Detalles</button>
+        </article>
+      ))}
+      <Link to="/">Ir a inicio</Link>
+    </main>
+  );
+};
 
-    loadCoaster()
-
-    return(
-        <main>
-            <h1>Lista</h1>
-            <hr/>
-            {coasters.map(eachCoaster =>{
-                return (
-                    <article className="coaster-card">
-                        <img src={eachCoaster.imageUrl}></img>
-                        <h3>{eachCoaster.title}</h3>
-                    </article>
-                )
-            })}
-            <Link to="/">Ir a inicio</Link>
-        </main>
-    )
-}
-
-export default CoasterPage
+export default CoasterPage;
