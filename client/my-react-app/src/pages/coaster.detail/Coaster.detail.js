@@ -1,8 +1,9 @@
-import { Link, useParams } from "react-router-dom";
+import { Link, useParams, useNavigate } from "react-router-dom";
 import React, { useState, useEffect } from 'react';
 
 const CoasterDetails = () => {
   const { coasterId } = useParams();
+  const navigate = useNavigate();
   const [coaster, setCoaster] = useState(null);
 
   const loadCoasterDetails = () => {
@@ -16,6 +17,19 @@ const CoasterDetails = () => {
       });
   };
 
+  const deleteCoaster = () => {
+    fetch(`http://localhost:5005/api/delete/${coasterId}`, {
+      method: 'DELETE'
+    })
+      .then(res => res.json())
+      .then(() => {
+        navigate('/');
+      })
+      .catch(error => {
+        console.log('Error al eliminar la montaña rusa:', error);
+      });
+  };
+
   useEffect(() => {
     loadCoasterDetails();
   }, []);
@@ -23,6 +37,13 @@ const CoasterDetails = () => {
   if (!coaster) {
     return <div>Cargando detalles...</div>;
   }
+
+  const handleDelete = () => {
+    const confirmed = window.confirm('¿Estás seguro de que deseas eliminar esta montaña rusa?');
+    if (confirmed) {
+      deleteCoaster();
+    }
+  };
 
   return (
     <main>
@@ -33,7 +54,7 @@ const CoasterDetails = () => {
       <p>{coaster.description}</p>
       <p>{coaster.length}</p>
       <p>{coaster.inversions}</p>
-      <button>Eliminar</button>
+      <button onClick={handleDelete}>Eliminar</button>
       <hr/>
       <Link to="/">Inicio</Link>
     </main>
