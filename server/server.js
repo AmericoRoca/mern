@@ -1,7 +1,13 @@
 const express = require('express');
 const mongoose = require('mongoose');
+const bodyParser = require('body-parser');
+
 
 const app = express()
+
+
+// Parse application/json
+app.use(bodyParser.json());
 
 //DB connection
 mongoose.connect('mongodb://localhost/Garaje')
@@ -36,7 +42,7 @@ app.delete('/api/delete/:coaster_id', (req,res) => {
 
     const {coaster_id} = req.params
 
-    Coaster.findOneAndRemove({ coaster_id })
+    Coaster.findOneAndRemove({ _id: coaster_id })
     .then(removedCoaster => {
         if (removedCoaster) {
             console.log('Objeto eliminado:', removedCoaster);
@@ -46,6 +52,31 @@ app.delete('/api/delete/:coaster_id', (req,res) => {
         }
     });
 });
+
+
+app.post('/api/addCoaster', (req, res) => {
+    const { title, description, length, inversions, imageUrl } = req.body;
+  
+  
+    const newCoaster = new Coaster({
+      title,
+      description,
+      length,
+      inversions,
+      imageUrl
+    });
+  
+    newCoaster.save()
+      .then(savedCoaster => {
+        console.log('Nueva montaña rusa guardada:', savedCoaster);
+        res.status(200).json(savedCoaster);
+      })
+      .catch(error => {
+        console.log('Error al guardar la montaña rusa:', error);
+        res.status(500).json({ error: 'Ocurrió un error al guardar la montaña rusa' });
+      });
+});
+  
 
 app.listen(5005, () => console.log('SERVIDOR LEVANTADO')) 
 
