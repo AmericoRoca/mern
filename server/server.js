@@ -10,6 +10,10 @@ mongoose.connect('mongodb://localhost/Garaje')
 //Model
 const Coaster = require('./models/coaster.model');
 
+//CORS
+const cors = require('cors')
+app.use(cors())
+
 
 //Routing
 app.get('/api/coaster', (req,res) => {
